@@ -1,0 +1,12 @@
+node_modules/
+.next/
+src/generated/
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
+coverage/
+*.tsbuildinfo
+*.log
+.local-tls/

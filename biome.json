@@ -1,0 +1,32 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!!**/node_modules",
+      "!!**/.next",
+      "!!**/src/generated",
+      "!!**/playwright-report",
+      "!!**/test-results",
+      "!!**/package-lock.json",
+      "!!**/next-env.d.ts",
+      "!!**/docs/fitness_rpg_product_spec_v1.md",
+      "!!**/.local-tls"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
+}

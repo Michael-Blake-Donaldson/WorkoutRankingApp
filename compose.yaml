@@ -1,0 +1,39 @@
+name: fitness-rpg
+services:
+  db:
+    image: postgres:17-alpine@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fitness
+      POSTGRES_PASSWORD: local-development-only
+      POSTGRES_DB: fitness
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitness -d fitness"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  mail:
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:51025:1025"
+      - "127.0.0.1:58025:8025"
+  mail-tls:
+    profiles: ["e2e"]
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    ports:
+      - "127.0.0.1:51465:1025"
+      - "127.0.0.1:58026:8025"
+    volumes:
+      - ./.local-tls:/certs:ro
+    environment:
+      MP_SMTP_TLS_CERT: /certs/cert.pem
+      MP_SMTP_TLS_KEY: /certs/key.pem
+      MP_SMTP_REQUIRE_TLS: "true"
+      MP_SMTP_AUTH: "test:test-only-local"
+volumes:
+  postgres-data:

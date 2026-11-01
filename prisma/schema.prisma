@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  slot          Int       @unique @default(0)
+  sessions      Session[]
+  accounts      Account[]
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamptz(3)
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+  createdAt             DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime @updatedAt @db.Timestamptz(3)
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @unique
+  value      String
+  expiresAt  DateTime @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+  @@index([expiresAt])
+  @@map("verifications")
+}
+
+model Invitation {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  usedAt    DateTime? @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  @@map("invitations")
+}
+
+model Capacity {
+  id       Int @id
+  occupied Int @default(0)
+  @@map("account_capacity")
+}
+
+model RequestBucket {
+  key       String   @id
+  count     Int
+  expiresAt DateTime @db.Timestamptz(3)
+  @@index([expiresAt])
+  @@map("request_buckets")
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid())
+  eventType String
+  entityId  String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([entityId, createdAt])
+  @@map("audit_events")
+}

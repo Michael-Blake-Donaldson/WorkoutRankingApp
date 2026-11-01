@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  background: #f5f5f3;
+  color: #202421;
+  font:
+    1rem / 1.6 Arial,
+    sans-serif;
+}
+main {
+  max-width: 36rem;
+  margin: 4rem auto;
+  padding: 1rem;
+}
+a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  background: #244c3a;
+  color: white;
+  border-radius: 0.3rem;
+}
+a:focus-visible {
+  outline: 3px solid #224fd4;
+  outline-offset: 4px;
+}
