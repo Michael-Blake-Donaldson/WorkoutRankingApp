@@ -1,7 +1,9 @@
 import { getAuth } from "@/server/auth";
+import { enforceRuntimePolicy } from "@/server/runtime-policy";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
+    await enforceRuntimePolicy();
     const session = await getAuth().api.getSession({
       headers: request.headers,
     });

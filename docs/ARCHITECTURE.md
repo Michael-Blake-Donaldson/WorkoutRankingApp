@@ -58,3 +58,13 @@ Default opponent projection includes only approved competition score/breakdown a
 Cache public shell/static assets only. Partition IndexedDB by account, clear private caches on explicit confirmed deletion, and warn before logout if pending writes exist. Do not auto-upload another account's queue. Browser storage eviction cannot be ruled out: expose pending state, persist storage when supported, and document recovery limits.
 
 Backups, restore rehearsal, account export/deletion, privacy-safe error monitoring, TLS, deployment rollback and migration rehearsal are release gates. Device testing is required for iPhone installation/offline/permissions; background notifications are best effort. Phase 1 must choose a host supporting PostgreSQL, HTTPS and scheduled jobs without claiming those services are already provisioned.
+
+## Phase 1 implementation update — 2026-11-01
+
+User authorized Phase 1 after the architecture review boundary. The original specification is now at `docs/fitness_rpg_product_spec_v1.md`; its original SHA-256 remains unchanged. Implemented only auth, infrastructure and navigation modules. App Router uses a protected workspace layout plus session validation in each private page; server routes validate identity independently.
+
+Selected Next.js 16.4.3, React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3, Prisma 7.10.1 and Better Auth 1.7.15 with passwordless magic links. PostgreSQL 17 and Mailpit test services are containerized. Exact tool versions are pinned in package.json/lockfile. Biome replaces the proposed ESLint toolchain because its resolved dependency chain had moderate advisories; lint, accessibility rules and strict type checking remain enabled. Vitest and Playwright exercise actual PostgreSQL and SMTP.
+
+Runtime and migration/operator credentials are separate. Production authorization reads reject elevated database credentials. The service worker caches only a public offline shell and icons, with no forced takeover of active pages; private HTML and API caching remain prohibited. Session expiry is seven days absolute without sliding refresh. A later-phase IndexedDB recorder is not implied by the public fallback.
+
+Target deployment is a Node 24 process behind HTTPS with managed PostgreSQL, authenticated TLS SMTP and a daily maintenance job. Actual host/domain/provider/backup configuration remains a deployment gate; nothing has been provisioned externally. See [security](SECURITY.md) and [setup](LOCAL_SETUP.md).

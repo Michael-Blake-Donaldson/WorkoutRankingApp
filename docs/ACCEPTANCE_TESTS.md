@@ -1,6 +1,6 @@
 # Acceptance tests and initial testing strategy
 
-Status: planned application tests; none of the production behaviors below have been implemented or executed. The only executable Phase 0 check is `scripts/check-phase0.ps1`, which checks required documentation, local links and key section coverage. It cannot certify correctness of prose or runtime features.
+Status: the matrix below spans the full product roadmap. Phase 1 now has executable foundation tests; later-phase behaviors remain planned. See [Phase 1 report](PHASE1_REPORT.md) for actual evidence and [local setup](LOCAL_SETUP.md) for commands. The Phase 0 script checks documentation/links/specification integrity only.
 
 ## Test layers
 
@@ -48,3 +48,9 @@ Inject clock, timezone, IDs and immutable rules into pure calculations. Test gol
 ## Evidence and phase exit
 
 Record command/environment, pass/fail counts, fixture/rules versions, failures and limits per implementing phase. No skipped core authorization/offline/ranking test may be described as passing. Phase 0 validates documentation only; migration, browser, accessibility, security, device and performance checks are not applicable yet, not passed. Architecture review is the next human gate.
+
+## Phase 1 mapping
+
+AUTH-01/02/03 have real invitation, proof, session, ownership, origin, rate-limit and database-permission tests. PWA-01 has production-browser manifest/assets/offline/cache tests; real iPhone installation is pending. UX-01 has axe checks of sign-in and profile, 320px layout/tap target and Chromium keyboard traversal plus WebKit focus checks; full manual screen-reader/device QA remains pending. OPS-01 has migration/seed execution locally; backup restore rehearsal is not yet performed. No later-phase test is complete.
+
+`npm test` uses Vitest and isolated local PostgreSQL; `npm run test:e2e` uses a production build with HTTPS, restricted database credentials and local authenticated TLS SMTP. Both browser engines execute offline cache assertions. No feature service is mocked. Biome recommended rules and strict TypeScript supplement runtime tests. GitHub Actions configuration mirrors local verification but has not executed remotely.

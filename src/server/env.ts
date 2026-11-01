@@ -41,5 +41,5 @@ export function readEnv(input: NodeJS.ProcessEnv = process.env) {
   ) {
     throw new Error("Production requires HTTPS and authenticated TLS SMTP");
   }
-  return value;
+  return { ...value, BETTER_AUTH_URL: url.origin };
 }

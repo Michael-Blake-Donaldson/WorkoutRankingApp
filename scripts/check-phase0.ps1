@@ -12,6 +12,10 @@ $required = @{
     'docs/ACCEPTANCE_TESTS.md' = @('Test layers', 'Traceable acceptance scenarios', 'Evidence and phase exit')
     'docs/PHASE_PLAN.md' = @('Numbered changes', 'Seed strategy')
     'docs/PHASE0_REPORT.md' = @('Completed work', 'Verification', 'Remaining work')
+    'docs/LOCAL_SETUP.md' = @('First run', 'Verification', 'Migrations, seeds and recovery')
+    'docs/SECURITY.md' = @('Threats and implemented controls', 'Production deployment gate', 'Known limits')
+    'docs/IPHONE_VALIDATION.md' = @('not performed', 'Real iPhone validation checklist')
+    'docs/PHASE1_REPORT.md' = @('Completed work', 'Verification', 'Problems found and resolved', 'Remaining work')
 }
 $linkCount = 0
 $sourceHash = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'docs/fitness_rpg_product_spec_v1.md') -Algorithm SHA256).Hash

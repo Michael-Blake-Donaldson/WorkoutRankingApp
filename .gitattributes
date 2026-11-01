@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.png binary
+# Preserve the primary specification's exact recorded bytes on every platform.
+docs/fitness_rpg_product_spec_v1.md -text

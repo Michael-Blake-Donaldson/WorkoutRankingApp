@@ -27,7 +27,7 @@ export function createAuth() {
     emailAndPassword: { enabled: false },
     session: {
       expiresIn: 60 * 60 * 24 * 7,
-      updateAge: 60 * 60 * 24,
+      disableSessionRefresh: true,
       cookieCache: { enabled: false },
     },
     // HTTP wrapper implements atomic persistent limits, including invalid invite requests.

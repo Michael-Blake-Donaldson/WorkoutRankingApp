@@ -4,10 +4,10 @@
   "description": "Private two-user fitness PWA combining serious training, RPG progression, guided adaptation, head-to-head competition, and basic nutrition.",
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
-    "lint": "biome check .",
-    "typecheck": "tsc --noEmit",
+    "lint": "biome check . --error-on-warnings",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "db:generate": "prisma generate",

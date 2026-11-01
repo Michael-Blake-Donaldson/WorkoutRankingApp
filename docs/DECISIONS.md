@@ -43,3 +43,18 @@ These fill specification gaps for test design, not claims of approved game balan
 - Phase 9: visual identity, sound and motion direction, measured performance budgets and real device matrix.
 
 Architecture review must confirm boundaries, privacy, synchronization, rule ownership and the Phase 1 checklist. Unresolved later-phase balance details do not authorize provisional production scoring. Phase 0 stops here; do not install dependencies or implement workflows during review.
+
+## Phase 1 decisions — 2026-11-01
+
+The user's instruction to continue authorizes Phase 1. The Phase 0 boundary text above records the earlier gate; it does not block this approved phase.
+
+| ID      | Status               | Decision                                                                                                                                                                                                                                 |
+| ------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ADR-008 | Accepted for Phase 1 | Better Auth passwordless magic links via authenticated TLS SMTP in production; local Mailpit for development/tests. Five-minute login proofs, 48-hour email-bound operator invitations. No public signup, passwords or social providers. |
+| ADR-009 | Implemented          | PostgreSQL locked singleton counter and unique slots enforce at most two enrolled accounts atomically. Invites consumed in the same insertion transaction. Runtime cannot issue invites or alter capacity directly.                      |
+| ADR-010 | Implemented          | Seven-day absolute server session expiry; no sliding refresh or cookie session cache. Native POST sign-out and operator all-session revocation. No email changes or account replacement workflow in Phase 1.                             |
+| ADR-011 | Implemented          | Biome recommended lint/a11y rules plus strict TypeScript, Vitest/PostgreSQL integration and Playwright Chromium/WebKit. Replace vulnerable lint dependency chain without forcing incompatible transitive versions.                       |
+| ADR-012 | Implemented          | Nonce CSP with dynamic rendering, no private service-worker caching, no forced worker takeover. Referrer-Policy same-origin preserves native POST origin while withholding cross-site referrers.                                         |
+| ADR-013 | Proposed deployment  | Node 24 host behind HTTPS, managed PostgreSQL, authenticated implicit TLS SMTP and daily cleanup; vendor/domain/retention/backup evidence still open until deployment. No paid resources or external messages provisioned.               |
+
+Training/ranking assumptions A01–A10 remain pending for their own phases. No balancing or nutrition decision was promoted to production in Phase 1. Real iPhone/hosted email validation is still required; desktop WebKit does not fulfill it.

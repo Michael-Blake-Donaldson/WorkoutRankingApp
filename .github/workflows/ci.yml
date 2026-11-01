@@ -1,0 +1,45 @@
+name: Phase 1 checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Configure isolated local services
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; import crypto from 'node:crypto'; fs.writeFileSync('.env', fs.readFileSync('.env.example','utf8').replace('BETTER_AUTH_SECRET=\n', 'BETTER_AUTH_SECRET='+crypto.randomBytes(32).toString('hex')+'\n'))"
+          npm run test:cert
+          docker compose --profile e2e up -d --wait
+      - run: npm run db:generate
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - run: npm run db:seed
+      - run: npm run test:prepare
+      - run: npm run test:e2e:prepare
+      - run: npm run db:runtime
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm audit --audit-level=moderate
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:e2e
+      - name: Documentation and primary-spec integrity
+        shell: pwsh
+        run: ./scripts/check-phase0.ps1
+      # No browser traces are uploaded: they contain synthetic session cookies.
+      - name: Stop local services
+        if: always()
+        run: docker compose --profile e2e down

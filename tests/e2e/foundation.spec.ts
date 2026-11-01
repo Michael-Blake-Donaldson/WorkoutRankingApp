@@ -108,6 +108,20 @@ test("invitation through email proof, private navigation and sign-out", async ({
     await page.waitForLoadState("load");
   }
   await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  const cachedPrivate = await page.evaluate(async () => {
+    for (const key of await caches.keys()) {
+      for (const entry of await (await caches.open(key)).keys()) {
+        const path = new URL(entry.url).pathname;
+        if (
+          path.startsWith("/api/") ||
+          ["/", "/profile", "/train", "/ranks", "/progress"].includes(path)
+        )
+          return true;
+      }
+    }
+    return false;
+  });
+  expect(cachedPrivate).toBe(false);
   const a11y = await new AxeBuilder({ page }).analyze();
   expect(a11y.violations).toEqual([]);
   expect(consoleErrors).toEqual([]);
@@ -150,13 +164,16 @@ test("public auth is accessible at 320px and protects scripts with a request non
     page.getByRole("link", { name: "Skip to content" }),
   ).toBeFocused();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: `test-results/phase1-baseline-${browserName}.png`,
+    fullPage: true,
+  });
 });
 
 test("manifest icons and offline shell work without caching private routes", async ({
   page,
   context,
   request,
-  browserName,
 }) => {
   const manifest = await (await request.get("/manifest.webmanifest")).json();
   expect(manifest.display).toBe("standalone");
@@ -164,11 +181,6 @@ test("manifest icons and offline shell work without caching private routes", asy
   for (const icon of manifest.icons)
     expect((await request.get(icon.src)).ok()).toBe(true);
   await page.goto("/sign-in");
-  // Desktop WebKit automation does not implement every iOS service-worker behavior.
-  if (browserName === "webkit") {
-    expect(await page.evaluate(() => "serviceWorker" in navigator)).toBe(true);
-    return;
-  }
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });

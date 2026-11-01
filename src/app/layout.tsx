@@ -34,6 +34,12 @@ export default function RootLayout({
           <span className="tag">Private workspace</span>
         </header>
         <ConnectionStatus />
+        <noscript>
+          <p className="status notice">
+            JavaScript is required for email sign-in and installation support.
+            Enable it to continue.
+          </p>
+        </noscript>
         {children}
       </body>
     </html>

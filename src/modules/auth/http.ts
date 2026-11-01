@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getAuth } from "../../server/auth";
 import { readEnv } from "../../server/env";
 import { consumeBucket, privateBucket } from "../../server/rate-limit";
+import { enforceRuntimePolicy } from "../../server/runtime-policy";
 import { eligibleForLink, emailSchema } from "./invitations";
 
 const inputSchema = z
@@ -16,6 +17,7 @@ const reply = (body: object, status = 200) =>
 export async function handleAuth(request: Request): Promise<Response> {
   try {
     const env = readEnv();
+    await enforceRuntimePolicy();
     const url = new URL(request.url);
     const path = url.pathname.replace(/^\/api\/auth/, "");
     if (

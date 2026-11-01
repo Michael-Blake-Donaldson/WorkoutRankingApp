@@ -1,7 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it, vi } from "vitest";
 import { PrismaClient } from "../../src/generated/prisma/client";
+import { enforceRuntimePolicy } from "../../src/server/runtime-policy";
 
 config({ path: ".env.runtime", quiet: true });
 if (!process.env.RUNTIME_DATABASE_URL)
@@ -21,6 +22,17 @@ afterAll(async () => {
 });
 
 describe("least-privilege database role", () => {
+  it("rejects elevated application credentials under the production policy", async () => {
+    const previous = process.env.NODE_ENV;
+    try {
+      vi.stubEnv("NODE_ENV", "production");
+      await expect(enforceRuntimePolicy()).rejects.toThrow(
+        "Restricted runtime database role required",
+      );
+    } finally {
+      vi.stubEnv("NODE_ENV", previous);
+    }
+  });
   it("is neither superuser nor schema owner and cannot create tables", async () => {
     const [role] = await runtime.$queryRaw<
       { rolsuper: boolean; rolcreatedb: boolean }[]
