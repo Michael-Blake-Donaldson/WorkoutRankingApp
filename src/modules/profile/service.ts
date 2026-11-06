@@ -22,24 +22,35 @@ export class ProfileError extends Error {
     super(message);
   }
 }
-async function owned<T>(userId: string, run: (tx: Tx) => Promise<T>) {
-  return db.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
-    return run(tx);
-  });
+async function owned<T>(
+  userId: string,
+  run: (tx: Tx) => Promise<T>,
+  consistent = false,
+) {
+  return db.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
+      return run(tx);
+    },
+    consistent ? { isolationLevel: "RepeatableRead" } : undefined,
+  );
 }
 export const getProfileBundle = (userId: string, cursor?: string) =>
-  owned(userId, async (tx) => {
-    if (
-      cursor &&
-      !(await tx.bodyMeasurement.findFirst({
-        where: { id: cursor, userId },
-        select: { id: true },
-      }))
-    )
-      throw new ProfileError(404, "Measurement cursor not found.");
-    return load(tx, userId, cursor);
-  });
+  owned(
+    userId,
+    async (tx) => {
+      if (
+        cursor &&
+        !(await tx.bodyMeasurement.findFirst({
+          where: { id: cursor, userId },
+          select: { id: true },
+        }))
+      )
+        throw new ProfileError(404, "Measurement cursor not found.");
+      return load(tx, userId, cursor);
+    },
+    true,
+  );
 export const getMotionPreference = (userId: string) =>
   owned(
     userId,

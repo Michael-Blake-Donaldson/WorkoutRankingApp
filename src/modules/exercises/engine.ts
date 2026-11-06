@@ -129,6 +129,17 @@ export function rankAlternatives(
     // Relevance is separate from eligibility. Never offer an unrelated high soft score.
     if (components.muscle === 0 || components.pattern === 0) continue;
     const differences: string[] = [];
+    if (source.difficulty !== exercise.difficulty)
+      differences.push(
+        `Editorial difficulty changes from ${source.difficulty}/3 to ${exercise.difficulty}/3; this is not a load prescription.`,
+      );
+    if (
+      [...source.equipment].sort().join(",") !==
+      [...exercise.equipment].sort().join(",")
+    )
+      differences.push(
+        `Required equipment changes from ${source.equipment.join(" + ") || "none"} to ${exercise.equipment.join(" + ") || "none"}.`,
+      );
     if (source.pattern !== exercise.pattern)
       differences.push(
         `Movement changes from ${source.pattern} to ${exercise.pattern}.`,

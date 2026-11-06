@@ -364,12 +364,34 @@ const entries: Entry[] = [
 export function contentHash(value: unknown) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
-export const catalogue: ExerciseDto[] = entries.map((entry, index) => {
+// Permanent identity registry: editorial ordering must never change identity or PR lineage.
+const identityNumbers: Record<string, number> = {
+  "bodyweight-squat": 1,
+  "dumbbell-goblet-squat": 2,
+  "kettlebell-goblet-squat": 3,
+  "glute-bridge": 4,
+  "dumbbell-romanian-deadlift": 5,
+  "kettlebell-deadlift": 6,
+  "push-up": 7,
+  "kneeling-push-up": 8,
+  "incline-push-up": 9,
+  "single-arm-dumbbell-chest-press": 10,
+  "pull-up": 11,
+  "forearm-plank": 12,
+  "side-plank": 13,
+  "dead-bug": 14,
+  "treadmill-walk": 15,
+  "treadmill-run": 16,
+};
+export const catalogue: ExerciseDto[] = entries.map((entry) => {
+  const identityNumber = identityNumbers[entry.slug];
+  if (!identityNumber)
+    throw new Error(`Assign a permanent exercise identity: ${entry.slug}`);
   const { primary, secondary, source, ...fields } = entry;
   const value = {
     ...fields,
-    id: `c0000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
-    versionId: `d0000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+    id: `c0000000-0000-4000-8000-${String(identityNumber).padStart(12, "0")}`,
+    versionId: `d0000000-0000-4000-8000-${String(identityNumber).padStart(12, "0")}`,
     version: 1,
     aliases: entry.aliases ?? [],
     laterality: entry.laterality ?? "bilateral",

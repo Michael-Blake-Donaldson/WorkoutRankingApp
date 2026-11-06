@@ -10,7 +10,8 @@ export async function enforceRuntimePolicy() {
           OR has_schema_privilege(current_user, 'public', 'CREATE')
           OR has_table_privilege(current_user, 'invitations', 'INSERT')
           OR has_table_privilege(current_user, 'account_capacity', 'UPDATE')
-          OR has_table_privilege(current_user, 'audit_events', 'DELETE')) AS elevated
+          OR has_table_privilege(current_user, 'audit_events', 'DELETE')
+          OR EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('muscles','exercises','exercise_versions','exercise_muscles','exercise_equipment') AND has_table_privilege(current_user,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE'))) AS elevated
         FROM pg_roles WHERE rolname = current_user`;
       if (!role || role.elevated)
         throw new Error("Restricted runtime database role required");
