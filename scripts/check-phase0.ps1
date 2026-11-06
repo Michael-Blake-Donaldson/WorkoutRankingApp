@@ -16,6 +16,8 @@ $required = @{
     'docs/SECURITY.md' = @('Threats and implemented controls', 'Production deployment gate', 'Known limits')
     'docs/IPHONE_VALIDATION.md' = @('not performed', 'Real iPhone validation checklist')
     'docs/PHASE1_REPORT.md' = @('Completed work', 'Verification', 'Problems found and resolved', 'Remaining work')
+    'docs/PHASE2_DATA_CONTRACT.md' = @('Phase 2 data contract', 'row-level security')
+    'docs/PHASE2_REPORT.md' = @('Completed work', 'Verification', 'Problems found and resolved', 'Repository submissions', 'Remaining work')
 }
 $linkCount = 0
 $sourceHash = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'docs/fitness_rpg_product_spec_v1.md') -Algorithm SHA256).Hash

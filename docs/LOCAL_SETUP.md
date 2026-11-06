@@ -73,6 +73,8 @@ Playwright starts and stops its own production server at `https://localhost:3443
 
 ## Migrations, seeds and recovery
 
+For Phase 2, rerun `db:migrate`, `test:prepare`, `test:e2e:prepare` and `db:runtime` before starting the app or tests. New private tables require the new grants and row-level-security policies. Sign in, choose **Start or resume setup**, then save training preferences, an equipment location (empty equipment is supported), height and weight, and complete the review. `/profile` edits settings and `/progress` records measurements and shows BMI history. These pages require an online connection; no health data is seeded or cached in the service worker.
+
 `db:migrate` runs checked-in forward migrations. `db:seed` is idempotent reference initialization only and must not reset occupied account slots. `db:status` reports deployment state. Future schema changes use `npx prisma migrate dev --name descriptive_name` with owner credentials against a development database, followed by review of SQL, generation, and migration tests. Never use `db push` or a reset command against production.
 
 Keep the PostgreSQL volume when stopping: `docker compose --profile e2e down`. Removing volumes destroys local data and is not part of setup. If Docker restarts, check `docker compose ps` and rerun `up -d --wait`; failures to connect are failures, not successful migrations.

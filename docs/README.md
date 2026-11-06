@@ -21,3 +21,10 @@ Every design below is a specification for future implementation. Proposed defaul
 - [Phase 1 report and verification evidence](PHASE1_REPORT.md)
 
 Phase 0 documents describe the full roadmap. The Phase 1 report distinguishes implemented foundation from future workflows and external validation.
+
+## Phase 2 implementation
+
+- [Profile data contract and assumptions](PHASE2_DATA_CONTRACT.md)
+- [Phase 2 report](PHASE2_REPORT.md)
+
+Profiles, equipment, privacy controls, units and immutable measurement corrections are implemented with real persistence. Exercise selection, plan generation, workout logging, competition and meal tracking remain in their later phases.

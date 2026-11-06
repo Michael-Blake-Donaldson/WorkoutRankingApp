@@ -58,3 +58,12 @@ The user's instruction to continue authorizes Phase 1. The Phase 0 boundary text
 | ADR-013 | Proposed deployment  | Node 24 host behind HTTPS, managed PostgreSQL, authenticated implicit TLS SMTP and daily cleanup; vendor/domain/retention/backup evidence still open until deployment. No paid resources or external messages provisioned.               |
 
 Training/ranking assumptions A01–A10 remain pending for their own phases. No balancing or nutrition decision was promoted to production in Phase 1. Real iPhone/hosted email validation is still required; desktop WebKit does not fulfill it.
+
+## Phase 2 decisions — 2026-11-05
+
+- One aggregate revision serializes profile, equipment, measurement and preference writes. A UUID/hash receipt deduplicates retries. Stale versions and stale-account drafts are explicit conflicts, with unsaved inputs retained until the user chooses reload.
+- Store measurement SI values as six-place decimals using decimal.js; display-unit changes do not rewrite records. Corrections append links/reasons; BMI is chronological context only, with stable ordering and height baselines across pagination.
+- Keep private relational records behind forced RLS and application authorization. A single competition-summary consent prepares Phase 7 without exposing health data. Persist optional manual nutrition targets without adding meal logging or automatic prescriptions.
+- Onboarding saves each step and completes only with valid basics, an equipment location and height/weight. No-equipment locations are explicit empty lists. No age or DOB is needed in this phase.
+- Keep browser schemas free of server validation imports, disable health form submission before hydration, and use POST fallback. Allow style attributes for the framework's route announcer while keeping strict script and stylesheet policies.
+- Tests may block service workers only where network interception is required to simulate a dropped acknowledgement; production-worker cache/offline tests remain enabled separately in both browser engines. No feature backend is mocked.

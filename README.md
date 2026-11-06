@@ -2,13 +2,13 @@
 
 Private two-user fitness PWA combining serious training, RPG progression, guided adaptation, head-to-head competition, and basic nutrition.
 
-**Status: Phase 1 foundation implemented locally.** Next.js/TypeScript/Tailwind shell, real invitation-only email authentication for two accounts, PostgreSQL/Prisma migrations, accessible mobile navigation, PWA manifest/icons and public offline fallback. Visual identity remains undecided.
+**Status: Phase 2 implemented locally.** Resumable onboarding, private training profiles, equipment locations, measurements with corrections, unit preferences, BMI history and privacy/accessibility settings build on the invitation-only two-account PWA foundation. Visual identity remains undecided.
 
 Primary authority: [Product specification v1.0](docs/fitness_rpg_product_spec_v1.md). Proposed implementation decisions never silently override it.
 
-Start with [local setup](docs/LOCAL_SETUP.md), [security boundaries](docs/SECURITY.md), and [Phase 1 report](docs/PHASE1_REPORT.md). See the [documentation index](docs/README.md), [architecture](docs/ARCHITECTURE.md), and [decisions and assumptions](docs/DECISIONS.md) for the Phase 0 foundation.
+Start with [local setup](docs/LOCAL_SETUP.md), [security boundaries](docs/SECURITY.md), and [Phase 2 report](docs/PHASE2_REPORT.md). See the [documentation index](docs/README.md), [architecture](docs/ARCHITECTURE.md), and [decisions and assumptions](docs/DECISIONS.md) for the Phase 0 foundation.
 
-No workout recorder, adaptation engine, rankings, duels or nutrition workflows are implemented yet. Their destinations explicitly identify later-phase scope; there are no fake records or scores. Stop at the Phase 1 boundary before starting profiles/onboarding.
+No exercise recommendation engine, workout recorder, adaptation engine, rankings, duels or meal logger is implemented yet. No fake records or scores represent these later workflows. Stop at the Phase 2 boundary before starting the exercise library.
 
 Use Node 24 and Docker Desktop. The setup guide includes migration, safe seed, invitation, restricted database role, local email and test commands. No production host, SMTP provider, or real iPhone installation has been provisioned or verified.
 

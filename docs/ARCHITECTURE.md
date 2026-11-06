@@ -68,3 +68,11 @@ Selected Next.js 16.4.3, React 19.3.1, TypeScript 6.0.3, Tailwind 4.3.3, Prisma 
 Runtime and migration/operator credentials are separate. Production authorization reads reject elevated database credentials. The service worker caches only a public offline shell and icons, with no forced takeover of active pages; private HTML and API caching remain prohibited. Session expiry is seven days absolute without sliding refresh. A later-phase IndexedDB recorder is not implied by the public fallback.
 
 Target deployment is a Node 24 process behind HTTPS with managed PostgreSQL, authenticated TLS SMTP and a daily maintenance job. Actual host/domain/provider/backup configuration remains a deployment gate; nothing has been provisioned externally. See [security](SECURITY.md) and [setup](LOCAL_SETUP.md).
+
+## Phase 2 implementation update — 2026-11-05
+
+Implemented the profile module with validated HTTP adapters, owner-scoped transactional services, immutable revisions/corrections and focused client form components. Six private tables use forced RLS with transaction-local authenticated identity. Mutation receipts and a shared aggregate revision prevent duplicate writes and lost updates; owner-intent headers reject drafts from an account switched in another tab. Decimal SI conversions use a pinned decimal.js dependency. Private measurements are paginated and BMI calculations receive the relevant historical height baseline.
+
+`/onboarding` saves three guided steps; `/profile` edits goals, equipment, units and privacy/accessibility settings; `/progress` records measurements and shows corrected BMI history. All data is real persistence, private by default, online-only in this phase. Browser forms declare POST and wait for hydration before submission. They preserve drafts during errors/conflicts and retain timestamps/UUIDs across unchanged retries. No exercise selection, program changes, workout logging, competitive scoring or meal tracking is implemented.
+
+The current UI remains neutral and accessible. Reduced motion is applied across the workspace. The framework route announcer requires inline style attributes, permitted through a scoped CSP directive while scripts and stylesheets retain their nonce policies. User-supplied HTML/CSS is never accepted. See [Phase 2 report](PHASE2_REPORT.md) and [data contract](PHASE2_DATA_CONTRACT.md).

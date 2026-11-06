@@ -51,6 +51,8 @@ Record command/environment, pass/fail counts, fixture/rules versions, failures a
 
 ## Phase 1 mapping
 
+Phase 2 extends executable coverage to PROFILE-01 and PRIV-01: actual profile persistence, cross-account isolation, SI conversion without rewrites, immutable correction chains, version conflicts, owner-bound retries, equipment/default handling, resumable onboarding and private settings. Browser flows exercise both Chromium and WebKit, including blocked JavaScript and a deliberately dropped network acknowledgement after a real backend commit. Service workers are blocked only in the network-interception case so the test runner can intercept that request; separate production-worker tests remain active in both browsers. Actual iPhone and manual screen-reader validation remain outstanding for these new forms.
+
 AUTH-01/02/03 have real invitation, proof, session, ownership, origin, rate-limit and database-permission tests. PWA-01 has production-browser manifest/assets/offline/cache tests; real iPhone installation is pending. UX-01 has axe checks of sign-in and profile, 320px layout/tap target and Chromium keyboard traversal plus WebKit focus checks; full manual screen-reader/device QA remains pending. OPS-01 has migration/seed execution locally; backup restore rehearsal is not yet performed. No later-phase test is complete.
 
 `npm test` uses Vitest and isolated local PostgreSQL; `npm run test:e2e` uses a production build with HTTPS, restricted database credentials and local authenticated TLS SMTP. Both browser engines execute offline cache assertions. No feature service is mocked. Biome recommended rules and strict TypeScript supplement runtime tests. GitHub Actions configuration mirrors local verification but has not executed remotely.

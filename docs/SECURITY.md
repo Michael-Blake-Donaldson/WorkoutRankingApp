@@ -27,9 +27,19 @@ Production release also requires a real iPhone installation/offline/logout check
 
 ## Known limits and future obligations
 
-Generic sign-in messages prevent direct membership disclosure but cannot guarantee identical timing, especially during SMTP failures. A global auth limiter can be exhausted to deny access temporarily; it intentionally avoids spoofable IP trust until deployment topology is known. Email account compromise compromises passwordless login; no MFA/passkey is implemented in Phase 1. Existing session revocation does not ban future logins or cancel existing valid email proofs. Browser storage and back/forward behavior need real device testing; health data is not yet present. No workout data is available offline.
+Generic sign-in messages prevent direct membership disclosure but cannot guarantee identical timing, especially during SMTP failures. A global auth limiter can be exhausted to deny access temporarily; it intentionally avoids spoofable IP trust until deployment topology is known. Email account compromise compromises passwordless login; no MFA/passkey is implemented in Phase 1. Existing session revocation does not ban future logins or cancel existing valid email proofs. Browser storage and back/forward behavior need real device testing; private profile health data is now present. No workout data is available offline.
 
 The account counter records enrolled slots and does not automatically reopen a slot after deletion. No deletion HTTP endpoint exists yet; reviewed deletion/anonymization and slot replacement policy belong to Phase 8. No broad security certification is claimed. Future phases must preserve these boundaries and extend integration tests as new private resources are added.
+
+## Phase 2 additions
+
+Private profile tables use forced row-level security, owner-matching child foreign keys and explicit runtime grants. Each request establishes its owner from the authenticated session and sets a transaction-local owner for database policies. Missing owner context returns no private rows. Mutations require an owner-intent header matching the session to reject stale tabs after an account switch; the header never authorizes access. Profile revisions and measurement corrections are append-only for runtime credentials. Role verification also rejects BYPASSRLS privileges.
+
+All health forms use POST and remain disabled before hydration. Client mutations carry UUIDs and expected aggregate revisions, and unchanged measurement retries preserve their generated timestamps. Health fields and validation values are not placed in URLs, persistent browser storage or logs. API responses and private pages remain no-store; sharing consent never exposes health data through another endpoint.
+
+The CSP retains nonce/strict-dynamic scripts and nonce-restricted stylesheets. `style-src-attr 'unsafe-inline'` is a deliberate scoped exception for Next.js's screen-reader route announcer, whose bundled implementation uses `style.cssText`. UI components render text through React escaping and never accept arbitrary HTML/CSS. Validation schemas stay server-side; dependency-free UI options avoid Zod's dynamic-code probe in the browser.
+
+Profile measurements, restrictions, targets, equipment and version snapshots remain private even after enabling competition summary consent. Competition scoring and delivery of shared summaries are not implemented in Phase 2. Audio/haptic toggles persist preferences; they do not request device permissions or imply implemented workout alerts.
 
 ## Primary implementation references
 
