@@ -8,6 +8,7 @@ import type {
   ProfileChange,
 } from "../../src/modules/profile/contracts";
 import { profileHttp } from "../../src/modules/profile/http";
+import { getAuth } from "../../src/server/auth";
 import { db } from "../../src/server/db";
 import { authenticatedUser, origin } from "../fixtures/auth";
 
@@ -33,17 +34,25 @@ const settings = {
   hapticsEnabled: false,
   motionPreference: "system" as const,
 };
-const send = (
+const send = async (
   cookie: string,
   expectedVersion: number,
   change: ProfileChange,
   id = randomUUID(),
   extra: object = {},
-) =>
-  profileHttp(
+) => {
+  const session = await getAuth().api.getSession({
+    headers: new Headers({ cookie }),
+  });
+  return profileHttp(
     new Request(`${origin}/api/profile`, {
       method: "POST",
-      headers: { cookie, origin, "content-type": "application/json" },
+      headers: {
+        cookie,
+        origin,
+        "content-type": "application/json",
+        "x-profile-owner": session?.user.id ?? "",
+      },
       body: JSON.stringify({
         clientMutationId: id,
         expectedVersion,
@@ -52,6 +61,7 @@ const send = (
       }),
     }),
   );
+};
 const read = (cookie: string, query = "") =>
   profileHttp(
     new Request(`${origin}/api/profile${query}`, { headers: { cookie } }),
@@ -104,6 +114,37 @@ afterAll(async () => {
 });
 
 describe("private profile API with real database and email authentication", () => {
+  it("rejects a stale tab saving under a newly signed-in account", async () => {
+    const a = await authenticatedUser("original");
+    const b = await authenticatedUser("replacement");
+    await save(a.cookie, 0, { operation: "save-profile", basics });
+    await save(b.cookie, 0, {
+      operation: "save-profile",
+      basics: { ...basics, displayName: "Replacement", limitations: "" },
+    });
+    const response = await profileHttp(
+      new Request(`${origin}/api/profile`, {
+        method: "POST",
+        headers: {
+          cookie: b.cookie,
+          origin,
+          "content-type": "application/json",
+          "x-profile-owner": a.id,
+        },
+        body: JSON.stringify({
+          clientMutationId: randomUUID(),
+          expectedVersion: 1,
+          change: { operation: "save-profile", basics },
+        }),
+      }),
+    );
+    expect(response.status).toBe(409);
+    expect(
+      (await db.fitnessProfile.findUniqueOrThrow({ where: { userId: b.id } }))
+        .displayName,
+    ).toBe("Replacement");
+  });
+
   it("paginates all history and includes the earlier height needed for BMI", async () => {
     const a = await authenticatedUser("history");
     await save(a.cookie, 0, { operation: "save-profile", basics });

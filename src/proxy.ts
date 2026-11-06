@@ -7,6 +7,9 @@ export function proxy(request: NextRequest) {
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ""}`,
     `style-src 'self' 'nonce-${nonce}'`,
+    // Next.js route announcer sets inline CSS for screen-reader-only content.
+    // Keep stylesheet nonces and strict script policy; permit only style attributes.
+    "style-src-attr 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self'",
     `connect-src 'self'${dev ? " ws: wss:" : ""}`,

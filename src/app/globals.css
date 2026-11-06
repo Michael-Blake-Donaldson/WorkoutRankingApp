@@ -27,6 +27,94 @@ button,
 input {
   font: inherit;
 }
+select,
+textarea {
+  font: inherit;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem;
+  border: 1px solid #68746b;
+  border-radius: 0.3rem;
+  background: white;
+  color: var(--text);
+}
+textarea {
+  min-height: 90px;
+}
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  padding: 0.8rem;
+  min-width: 0;
+}
+legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  font-weight: 400;
+}
+
+.load-fields {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0 0 1rem 1.25rem;
+}
+.equipment-form {
+  padding: 1rem 0;
+}
+summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.6rem 0;
+  overflow-wrap: anywhere;
+}
+details {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+h3 {
+  font-weight: 600;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+th,
+td {
+  padding: 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.save-status {
+  position: sticky;
+  top: 0;
+  background: var(--background);
+  z-index: 2;
+  overflow-wrap: anywhere;
+}
+.steps {
+  padding-left: 1.5rem;
+}
+body[data-motion="reduce"] *,
+body[data-motion="reduce"] *::before,
+body[data-motion="reduce"] *::after {
+  /* biome-ignore lint/complexity/noImportantStyles: Explicit accessibility preference takes priority. */
+  animation: none !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Explicit accessibility preference takes priority. */
+  transition: none !important;
+  /* biome-ignore lint/complexity/noImportantStyles: Explicit accessibility preference takes priority. */
+  scroll-behavior: auto !important;
+}
 button,
 .button {
   display: inline-flex;
@@ -117,6 +205,7 @@ p {
 }
 .stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 label {
@@ -124,6 +213,8 @@ label {
   display: block;
 }
 input {
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   min-height: 44px;
   padding: 0.65rem;
@@ -131,6 +222,15 @@ input {
   border-radius: 0.3rem;
   background: white;
   color: var(--text);
+}
+.field {
+  min-width: 0;
+}
+.check input {
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  flex-shrink: 0;
 }
 .notice {
   padding: 0.8rem 1rem;

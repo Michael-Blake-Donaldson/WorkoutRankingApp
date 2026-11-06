@@ -45,6 +45,14 @@ export async function profileHttp(request: Request) {
       request.headers.get("sec-fetch-site") === "cross-site"
     )
       return reply({ error: "Request origin rejected" }, 403);
+    if (request.headers.get("x-profile-owner") !== session.user.id)
+      return reply(
+        {
+          error:
+            "The signed-in account changed. Reload before saving this profile.",
+        },
+        409,
+      );
     if (!request.headers.get("content-type")?.startsWith("application/json"))
       return reply({ error: "JSON required" }, 415);
     if (!(await consumeBucket(`profile:${session.user.id}`, 60, 60)))

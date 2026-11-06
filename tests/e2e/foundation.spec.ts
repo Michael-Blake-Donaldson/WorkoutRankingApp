@@ -39,7 +39,7 @@ test("invitation through email proof, private navigation and sign-out", async ({
   await page.addInitScript(() => {
     document.addEventListener("securitypolicyviolation", (event) =>
       console.error(
-        `CSP violation: ${event.violatedDirective} ${event.blockedURI}`,
+        `CSP violation: ${event.violatedDirective} ${event.blockedURI} ${event.sourceFile}:${event.lineNumber}`,
       ),
     );
   });
@@ -122,6 +122,7 @@ test("invitation through email proof, private navigation and sign-out", async ({
     return false;
   });
   expect(cachedPrivate).toBe(false);
+  expect(consoleErrors).toEqual([]);
   const a11y = await new AxeBuilder({ page }).analyze();
   expect(a11y.violations).toEqual([]);
   expect(consoleErrors).toEqual([]);

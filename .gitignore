@@ -10,3 +10,4 @@ coverage/
 *.tsbuildinfo
 *.log
 .local-tls/
+next-env.d.ts

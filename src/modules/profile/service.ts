@@ -93,6 +93,7 @@ async function load(
     include: { items: { orderBy: { equipmentType: "asc" } } },
   });
   return {
+    accountId: userId,
     profile: profile
       ? {
           displayName: profile.displayName,

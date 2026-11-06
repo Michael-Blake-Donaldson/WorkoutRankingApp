@@ -6,7 +6,7 @@ export async function enforceRuntimePolicy() {
   if (!verified) {
     verified = (async () => {
       const [role] = await db.$queryRaw<{ elevated: boolean }[]>`
-        SELECT (rolsuper OR rolcreatedb OR rolcreaterole
+        SELECT (rolsuper OR rolcreatedb OR rolcreaterole OR rolbypassrls
           OR has_schema_privilege(current_user, 'public', 'CREATE')
           OR has_table_privilege(current_user, 'invitations', 'INSERT')
           OR has_table_privilege(current_user, 'account_capacity', 'UPDATE')

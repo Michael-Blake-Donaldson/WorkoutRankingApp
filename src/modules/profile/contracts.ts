@@ -1,33 +1,9 @@
 import { z } from "zod";
 
-export const goals = [
-  "strength",
-  "muscle",
-  "endurance",
-  "general_fitness",
-] as const;
-export const equipmentTypes = [
-  "dumbbell",
-  "barbell",
-  "bench",
-  "rack",
-  "pull_up_bar",
-  "resistance_band",
-  "kettlebell",
-  "cable",
-  "machine",
-  "treadmill",
-  "bike",
-] as const;
-export const metrics = [
-  "height",
-  "weight",
-  "waist",
-  "chest",
-  "hip",
-  "arm",
-  "thigh",
-] as const;
+import { equipmentTypes, goals, metrics } from "./options";
+
+export { equipmentTypes, goals, metrics } from "./options";
+
 const numeric = z
   .string()
   .regex(
@@ -215,6 +191,7 @@ export type EquipmentDto = {
   }[];
 };
 export type ProfileBundle = {
+  accountId: string;
   profile:
     | (Basics &
         Preferences & {

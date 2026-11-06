@@ -1,4 +1,4 @@
-name: Phase 1 checks
+name: Project verification
 on:
   push:
   pull_request:

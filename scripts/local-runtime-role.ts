@@ -46,8 +46,8 @@ try {
   // PostgreSQL formats a password literal safely; the raw statement is never logged.
   const sql = await client.query("SELECT format($1, $2::text) AS statement", [
     exists
-      ? "ALTER ROLE fitness_runtime LOGIN PASSWORD %L NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION"
-      : "CREATE ROLE fitness_runtime LOGIN PASSWORD %L NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION",
+      ? "ALTER ROLE fitness_runtime LOGIN PASSWORD %L NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS"
+      : "CREATE ROLE fitness_runtime LOGIN PASSWORD %L NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS",
     decodeURIComponent(runtime.password),
   ]);
   await client.query(sql.rows[0].statement);
