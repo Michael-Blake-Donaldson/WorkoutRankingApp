@@ -360,6 +360,30 @@ const entries: Entry[] = [
         source: treadmill,
       }) satisfies Entry,
   ),
+  {
+    slug: "supported-dumbbell-row",
+    name: "Supported single-arm dumbbell row",
+    variantGroup: "horizontal-row",
+    pattern: "horizontal_pull",
+    modality: "resistance",
+    resistance: "dumbbell",
+    laterality: "unilateral",
+    difficulty: 2,
+    equipment: ["dumbbell", "bench"],
+    demands: ["kneeling", "wrist_extension", "external_spinal_load"],
+    primary: ["lats"],
+    secondary: ["biceps", "deltoids", "abdominals"],
+    instructions: [
+      "Support one hand and the same-side knee on a stable bench; hold a manageable dumbbell in your other hand.",
+      "Brace your trunk and draw the weight toward your side without twisting or shrugging.",
+      "Lower slowly, then repeat with the opposite side.",
+    ],
+    safetyNotes: [
+      "Check that the bench cannot slide or tip. Keep your trunk steady and use a load you can position and lower safely.",
+    ],
+    source:
+      "https://www.acefitness.org/resources/everyone/exercise-library/126/single-arm-row/",
+  },
 ];
 export function contentHash(value: unknown) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -382,6 +406,7 @@ const identityNumbers: Record<string, number> = {
   "dead-bug": 14,
   "treadmill-walk": 15,
   "treadmill-run": 16,
+  "supported-dumbbell-row": 17,
 };
 export const catalogue: ExerciseDto[] = entries.map((entry) => {
   const identityNumber = identityNumbers[entry.slug];

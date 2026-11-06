@@ -23,7 +23,7 @@ afterAll(async () => {
 
 describe("least-privilege database role", () => {
   it("can read reference exercises but cannot rewrite them or read unscoped preferences", async () => {
-    expect(await runtime.exercise.count()).toBe(16);
+    expect(await runtime.exercise.count()).toBe(17);
     await expect(
       runtime.exercise.updateMany({ data: { archived: true } }),
     ).rejects.toThrow();

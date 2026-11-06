@@ -1,0 +1,35 @@
+# Phase 4 program contract
+
+## Scope and source of authority
+
+Implements proposals, explicit accept/reject decisions, immutable versions/prescriptions, future scheduling and private fatigue check-ins. The product specification remains unchanged. No recorder, simulated performance, automatic progression, PR, ranking, duel or meal workflow is introduced. The hybrid experience, approval-based adaptation, competition and basic nutrition decisions persist. Visual identity stays undecided.
+
+Planning defaults are versioned editorial software guardrails, not clinical safety thresholds or individualized medical prescriptions. ACSM's 2026 overview informs general resistance-training context, not the exact numerical defaults below: https://acsm.org/resistance-training-guidelines-update-2026/ and https://pubmed.ncbi.nlm.nih.gov/41843416/. A qualified exercise-content review remains a release requirement. Users explicitly acknowledge planning rules and review each proposal before approval. No load or 1RM is invented from missing performance data.
+
+## Generation and constraints
+
+The initial horizon is 28 local calendar days. Profile-selected weekdays are authoritative. Defaults are full body for 1–3 days and alternating upper/lower for 4; 5+ requires an explicit individualized day-type map. Overrides may use full/upper/lower/light-conditioning days but must cover knee, hip, push, pull and trunk patterns each seven-day planning week. The current finite library must supply every required slot through the existing equipment/limitation gates. Unsupported coverage is a specific refusal, never a fabricated movement. Light conditioning uses walking only, not assumed readiness for running.
+
+Goal presets: strength 6–8 reps/180 seconds rest; muscle 8–12/120; general fitness 8–12/120; endurance 12–15/90. Starting working sets: beginner/intermediate 2, advanced 3; user override 1–3. Target repetitions in reserve 3; no training to failure is prescribed. Isometric holds use 15–25 seconds; light conditioning 15 minutes. Initial external load is unspecified and requires appropriate technique/load selection. These are introductory templates, not optimized individualized strength or hypertrophy programs.
+
+Primary muscle sets count 1 and secondary sets .25, an editorial accounting heuristic rather than a physiological equivalence. Default per-muscle weekly ceilings are beginner 12, intermediate 16, advanced 18 weighted sets; a user may lower the ceiling (minimum 2) but cannot exceed the server cap. A seven-day week begins at the proposal's effective date. Minimum pattern coverage is one slot per required pattern family, not a universal volume recommendation. One-day plans disclose lower frequency. Duration estimates include 7 minutes preparation/cooldown, 2 minutes setup per movement, conservative 4 seconds per repetition (double unilateral work) or hold duration, and between-set rests. Plans exceeding the saved time budget are refused, not silently shortened.
+
+Strength sessions sharing primary muscles need at least 48 elapsed hours, including previous approved unsuperseded sessions and repeated weeks. Conditioning is explicitly light walking and contributes no resistance-set credit. Calendar and recovery checks use real UTC instants. Nonexistent or ambiguous local start times at DST transitions are rejected with a request for another time. Every scheduled row keeps its original local date, timezone and UTC start/end. Overlaps are rejected in application transactions and PostgreSQL exclusion constraints.
+
+## Check-in and adaptation
+
+Immutable check-ins contain optional fatigue/soreness 1–5, optional pain flag and private notes. All three readiness fields must be explicitly answered, and the latest check-in must be within 24 hours for generating/accepting training. Missing/expired values never imply readiness. Fatigue or soreness 3 proposes a lower set count (one fewer, minimum one); 4–5 or pain blocks training proposals and offers an explicit pause proposal. Any nonempty limitation notes retain Phase 3's qualified-review gate. No pain override is provided. A pause requires explicit dates/reason and approval; it cancels only future scheduled sessions inside its disclosed date range. Outside that range the previously approved schedule remains unchanged.
+
+Performance-based double progression cannot operate until Phase 5 provides real comparable set/effort/technique history. This phase does not manufacture that evidence or suggest load increases. Profile/goal/day/equipment edits require a new future proposal and approval; accepted versions are never silently regenerated.
+
+## Persistence, review and concurrency
+
+Owner-scoped ProgramState tracks a monotonic aggregate revision. ProgramVersion stores immutable inputs/rules hash, proposed sessions, explanations, volume summary and old/new schedule diff. ProgramDecision stores one terminal accept/reject decision. Acceptance materializes immutable ProgramSession and PrescribedExercise rows referencing exact ExerciseVersion IDs. ProgramSlot is the replaceable active calendar projection; ScheduleEvent appends superseded/pause provenance before removing any future slot. Old prescriptions remain readable. Sessions at or before server time are frozen; Phase 5 must additionally lock/exclude actual started workouts when integrating the recorder.
+
+All program writes share the user-row lock used by profile writes. Mutations require expected aggregate/profile versions, account-intent header and UUID/hash receipts. Any intervening program mutation invalidates a pending proposal; any profile change also invalidates it. Approval rechecks freshness, catalogue/rules versions, all constraints and the complete diff. Rejecting a draft changes no scheduled prescription. Lost acknowledgements replay once; changed payloads with reused UUIDs conflict. All private tables use FORCE RLS and composite owner foreign keys. History is append-only, and runtime rule access is read-only. Audit events contain event/entity IDs, not health notes.
+
+Authenticated no-store POST APIs use exact Origin checks, strict bounded JSON, per-user rate limits and session-derived ownership. No private form fields enter URLs, service-worker caches or browser persistence. Forms use POST and remain disabled before hydration. The initial history view lists recent versions; owner-authorized detail routes preserve access to immutable older versions.
+
+## Verification and phase boundary
+
+Golden tests cover full/upper-lower/custom splits, eligibility, volume/time budgets, fatigue/missing data, DST and recovery across weeks. Real PostgreSQL tests cover approval/rejection, immutable history, stale proposals, duplicate receipts, overlapping slots, owner isolation, protected reference data and failure rollback. Production HTTPS browser tests cover real profile -> check-in -> proposal -> explicit approval -> schedule, refusal/rejection, stale configuration, private pause and mobile accessibility. No successful production feature is mocked. Stop before Phase 5 recording, timers, IndexedDB/sync and applied exercise substitutions.

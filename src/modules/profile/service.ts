@@ -63,7 +63,7 @@ export const getMotionPreference = (userId: string) =>
       )?.motionPreference ?? "system",
   );
 
-async function load(
+export async function load(
   tx: Tx,
   userId: string,
   cursor?: string,

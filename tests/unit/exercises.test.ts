@@ -25,7 +25,7 @@ const find = (slug: string) => {
 describe("substitution-v1 golden cases", () => {
   it("validates original attributed seed identities and metadata", () => {
     expect(validateCatalogue()).toBeUndefined();
-    expect(catalogue).toHaveLength(16);
+    expect(catalogue).toHaveLength(17);
   });
   it("requires every equipment item, not just one of them", () => {
     const press = find("single-arm-dumbbell-chest-press");
@@ -106,6 +106,6 @@ describe("substitution-v1 golden cases", () => {
     expect(result.alternatives[0].exercise.slug).toBe("glute-bridge");
     expect(result.alternatives[0].relationship).toBe("related_movement");
     expect(result.alternatives[0].components.pattern).toBe(0.5);
-    expect(new Set(catalogue.map((e) => e.id)).size).toBe(16);
+    expect(new Set(catalogue.map((e) => e.id)).size).toBe(17);
   });
 });

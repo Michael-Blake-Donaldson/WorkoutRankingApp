@@ -25,6 +25,15 @@ model User {
   profileMutations     ProfileMutation[]
   exerciseRestrictions UserExerciseRestriction[]
   exerciseChoices      UserExerciseChoice[]
+  programState         ProgramState?
+  programVersions      ProgramVersion[]
+  programDecisions     ProgramDecision[]
+  programSessions      ProgramSession[]
+  prescribedExercises  PrescribedExercise[]
+  programSlots         ProgramSlot[]
+  scheduleEvents       ScheduleEvent[]
+  programMutations     ProgramMutation[]
+  fatigueCheckIns      FatigueCheckIn[]
 
   @@map("users")
 }
@@ -167,29 +176,30 @@ model Exercise {
 }
 
 model ExerciseVersion {
-  id           String              @id
-  exerciseId   String
-  exercise     Exercise            @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
-  version      Int
-  name         String
-  aliases      String[]
-  modality     String
-  pattern      String
-  laterality   String
-  resistance   String
-  difficulty   Int
-  metrics      String[]
-  demands      String[]
-  instructions String[]
-  safetyNotes  String[]
-  sourceUrls   String[]
-  license      String
-  reviewedBy   String
-  reviewedAt   DateTime            @db.Timestamptz(3)
-  contentHash  String
-  reviewStatus String
-  muscles      ExerciseMuscle[]
-  equipment    ExerciseEquipment[]
+  id            String               @id
+  exerciseId    String
+  exercise      Exercise             @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  version       Int
+  name          String
+  aliases       String[]
+  modality      String
+  pattern       String
+  laterality    String
+  resistance    String
+  difficulty    Int
+  metrics       String[]
+  demands       String[]
+  instructions  String[]
+  safetyNotes   String[]
+  sourceUrls    String[]
+  license       String
+  reviewedBy    String
+  reviewedAt    DateTime             @db.Timestamptz(3)
+  contentHash   String
+  reviewStatus  String
+  muscles       ExerciseMuscle[]
+  equipment     ExerciseEquipment[]
+  prescriptions PrescribedExercise[]
 
   @@unique([exerciseId, version])
   @@index([reviewStatus, name])
@@ -309,4 +319,155 @@ model ProfileMutation {
 
   @@unique([userId, clientMutationId])
   @@map("profile_mutations")
+}
+
+model ProgramRuleVersion {
+  id          String           @id
+  configJson  Json
+  contentHash String
+  reviewedBy  String
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  versions    ProgramVersion[]
+
+  @@map("program_rule_versions")
+}
+
+model ProgramState {
+  userId   String @id
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revision Int    @default(0)
+
+  @@map("program_states")
+}
+
+model FatigueCheckIn {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fatigue   Int?
+  soreness  Int?
+  pain      Boolean?
+  notes     String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, createdAt])
+  @@map("fatigue_check_ins")
+}
+
+model ProgramVersion {
+  id             String             @id @default(uuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version        Int
+  kind           String
+  profileVersion Int
+  baseRevision   Int
+  rulesVersionId String
+  rules          ProgramRuleVersion @relation(fields: [rulesVersionId], references: [id], onDelete: Restrict)
+  planJson       Json
+  createdAt      DateTime           @default(now()) @db.Timestamptz(3)
+  decision       ProgramDecision?
+  sessions       ProgramSession[]
+
+  @@unique([id, userId])
+  @@unique([userId, version])
+  @@index([userId, createdAt])
+  @@map("program_versions")
+}
+
+model ProgramDecision {
+  id               String          @id @default(uuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programVersionId String          @unique
+  version          ProgramVersion  @relation(fields: [programVersionId, userId], references: [id, userId], onDelete: Cascade)
+  decision         String
+  createdAt        DateTime        @default(now()) @db.Timestamptz(3)
+  events           ScheduleEvent[]
+
+  @@unique([id, userId])
+  @@unique([programVersionId, userId])
+  @@index([userId, createdAt])
+  @@map("program_decisions")
+}
+
+model ProgramSession {
+  id               String               @id @default(uuid())
+  userId           String
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programVersionId String
+  version          ProgramVersion       @relation(fields: [programVersionId, userId], references: [id, userId], onDelete: Cascade)
+  localDate        String
+  localStart       String
+  timezone         String
+  scheduledAt      DateTime             @db.Timestamptz(3)
+  endsAt           DateTime             @db.Timestamptz(3)
+  kind             String
+  estimatedMinutes Int
+  createdAt        DateTime             @default(now()) @db.Timestamptz(3)
+  prescriptions    PrescribedExercise[]
+  slot             ProgramSlot?
+  event            ScheduleEvent?
+
+  @@unique([id, userId])
+  @@index([userId, scheduledAt])
+  @@map("program_sessions")
+}
+
+model PrescribedExercise {
+  id                String          @id @default(uuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId         String
+  session           ProgramSession  @relation(fields: [sessionId, userId], references: [id, userId], onDelete: Cascade)
+  exerciseVersionId String
+  exerciseVersion   ExerciseVersion @relation(fields: [exerciseVersionId], references: [id], onDelete: Restrict)
+  ordinal           Int
+  targetJson        Json
+  snapshotJson      Json
+
+  @@unique([sessionId, ordinal])
+  @@index([userId, sessionId])
+  @@map("prescribed_exercises")
+}
+
+model ProgramSlot {
+  sessionId String         @id
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session   ProgramSession @relation(fields: [sessionId, userId], references: [id, userId], onDelete: Cascade)
+  startsAt  DateTime       @db.Timestamptz(3)
+  endsAt    DateTime       @db.Timestamptz(3)
+
+  @@unique([sessionId, userId])
+  @@index([userId, startsAt])
+  @@map("program_slots")
+}
+
+model ScheduleEvent {
+  id         String          @id @default(uuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId  String          @unique
+  session    ProgramSession  @relation(fields: [sessionId, userId], references: [id, userId], onDelete: Cascade)
+  decisionId String
+  decision   ProgramDecision @relation(fields: [decisionId, userId], references: [id, userId], onDelete: Cascade)
+  reason     String
+  createdAt  DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@unique([sessionId, userId])
+  @@index([userId, createdAt])
+  @@map("schedule_events")
+}
+
+model ProgramMutation {
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientMutationId String
+  payloadHash      String
+  appliedRevision  Int
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([userId, clientMutationId])
+  @@map("program_mutations")
 }

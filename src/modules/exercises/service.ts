@@ -1,3 +1,4 @@
+import type { Prisma } from "../../generated/prisma/client";
 import { db } from "../../server/db";
 import { getProfileBundle, ProfileError } from "../profile/service";
 import {
@@ -12,8 +13,10 @@ import type {
   ExerciseDto,
   FilterContext,
 } from "./types";
-export async function getCatalogue(): Promise<ExerciseDto[]> {
-  const rows = await db.exercise.findMany({
+export async function getCatalogue(
+  client: Pick<Prisma.TransactionClient, "exercise"> = db,
+): Promise<ExerciseDto[]> {
+  const rows = await client.exercise.findMany({
     where: { archived: false },
     include: {
       versions: {

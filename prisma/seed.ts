@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { seedExercises } from "../src/modules/exercises/seed";
+import { seedProgramRules } from "../src/modules/programs/rules";
 import { db } from "../src/server/db";
 
 // Capacity is initialized by the migration. Never reset the counter on seed reruns.
@@ -10,6 +11,7 @@ try {
     update: {},
   });
   await seedExercises(db);
+  await seedProgramRules(db);
   console.log(
     "Reference seed verified. No accounts, credentials, invitations or health data seeded.",
   );

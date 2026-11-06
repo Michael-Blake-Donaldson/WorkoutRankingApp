@@ -73,8 +73,8 @@ async function setup() {
 it("seeds transactionally twice without rewriting versions and prevents history updates", async () => {
   await seedExercises(db);
   await seedExercises(db);
-  expect(await getCatalogue()).toHaveLength(16);
-  expect(await db.exerciseVersion.count()).toBe(16);
+  expect(await getCatalogue()).toHaveLength(17);
+  expect(await db.exerciseVersion.count()).toBe(17);
   await expect(
     db.exerciseVersion.update({
       where: { id: catalogue[0].versionId },
