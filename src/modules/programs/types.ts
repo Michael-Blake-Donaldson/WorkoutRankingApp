@@ -71,6 +71,7 @@ export type ScheduleSummary = {
     name: string;
     versionId: string;
     muscles: { id: string; role: string }[];
+    target: Target;
   }[];
 };
 export type Plan = {

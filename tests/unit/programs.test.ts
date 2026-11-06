@@ -144,6 +144,7 @@ describe("program-v1 independent planning cases", () => {
         name: e.exercise.name,
         versionId: e.exercise.versionId,
         muscles: e.exercise.muscles,
+        target: e.target,
       })),
     };
     expect(() => ensureCalendar([session], [prior], programRules)).toThrow(
