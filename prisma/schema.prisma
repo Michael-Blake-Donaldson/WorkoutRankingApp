@@ -8,21 +8,23 @@ datasource db {
 }
 
 model User {
-  id                String             @id
-  name              String
-  email             String             @unique
-  emailVerified     Boolean            @default(false)
-  image             String?
-  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime           @updatedAt @db.Timestamptz(3)
-  slot              Int                @unique @default(0)
-  sessions          Session[]
-  accounts          Account[]
-  fitnessProfile    FitnessProfile?
-  bodyMeasurements  BodyMeasurement[]
-  equipmentProfiles EquipmentProfile[]
-  profileRevisions  ProfileRevision[]
-  profileMutations  ProfileMutation[]
+  id                   String                    @id
+  name                 String
+  email                String                    @unique
+  emailVerified        Boolean                   @default(false)
+  image                String?
+  createdAt            DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime                  @updatedAt @db.Timestamptz(3)
+  slot                 Int                       @unique @default(0)
+  sessions             Session[]
+  accounts             Account[]
+  fitnessProfile       FitnessProfile?
+  bodyMeasurements     BodyMeasurement[]
+  equipmentProfiles    EquipmentProfile[]
+  profileRevisions     ProfileRevision[]
+  profileMutations     ProfileMutation[]
+  exerciseRestrictions UserExerciseRestriction[]
+  exerciseChoices      UserExerciseChoice[]
 
   @@map("users")
 }
@@ -127,6 +129,7 @@ model FitnessProfile {
   likes                   String    @default("")
   dislikes                String    @default("")
   limitations             String    @default("")
+  movementFiltersReviewed Boolean   @default(false)
   heightCm                Decimal?  @db.Decimal(10, 3)
   calorieTarget           Decimal?  @db.Decimal(10, 2)
   proteinTargetG          Decimal?  @db.Decimal(10, 2)
@@ -141,6 +144,96 @@ model FitnessProfile {
   updatedAt               DateTime  @updatedAt @db.Timestamptz(3)
 
   @@map("fitness_profiles")
+}
+
+model Muscle {
+  id        String           @id
+  name      String
+  category  String
+  exercises ExerciseMuscle[]
+
+  @@map("muscles")
+}
+
+model Exercise {
+  id           String               @id
+  slug         String               @unique
+  variantGroup String
+  archived     Boolean              @default(false)
+  versions     ExerciseVersion[]
+  choices      UserExerciseChoice[]
+
+  @@map("exercises")
+}
+
+model ExerciseVersion {
+  id           String              @id
+  exerciseId   String
+  exercise     Exercise            @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  version      Int
+  name         String
+  aliases      String[]
+  modality     String
+  pattern      String
+  laterality   String
+  resistance   String
+  difficulty   Int
+  metrics      String[]
+  demands      String[]
+  instructions String[]
+  safetyNotes  String[]
+  sourceUrls   String[]
+  license      String
+  reviewedBy   String
+  reviewedAt   DateTime            @db.Timestamptz(3)
+  contentHash  String
+  reviewStatus String
+  muscles      ExerciseMuscle[]
+  equipment    ExerciseEquipment[]
+
+  @@unique([exerciseId, version])
+  @@index([reviewStatus, name])
+  @@map("exercise_versions")
+}
+
+model ExerciseMuscle {
+  exerciseVersionId String
+  version           ExerciseVersion @relation(fields: [exerciseVersionId], references: [id], onDelete: Restrict)
+  muscleId          String
+  muscle            Muscle          @relation(fields: [muscleId], references: [id], onDelete: Restrict)
+  role              String
+
+  @@id([exerciseVersionId, muscleId])
+  @@map("exercise_muscles")
+}
+
+model ExerciseEquipment {
+  exerciseVersionId String
+  version           ExerciseVersion @relation(fields: [exerciseVersionId], references: [id], onDelete: Restrict)
+  equipmentType     String
+
+  @@id([exerciseVersionId, equipmentType])
+  @@map("exercise_equipment")
+}
+
+model UserExerciseRestriction {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code   String
+
+  @@id([userId, code])
+  @@map("user_exercise_restrictions")
+}
+
+model UserExerciseChoice {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  preference String
+
+  @@id([userId, exerciseId])
+  @@map("user_exercise_choices")
 }
 
 model BodyMeasurement {

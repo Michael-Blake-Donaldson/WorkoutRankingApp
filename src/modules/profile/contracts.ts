@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  type ExercisePreference,
+  preferenceOptions,
+  type Restriction,
+  restrictionOptions,
+} from "../exercises/options";
 
 import { equipmentTypes, goals, metrics } from "./options";
 
@@ -121,7 +127,35 @@ const itemSchema = z
         message: "Minimum load exceeds maximum load.",
       });
   });
+const exercisePreferencesSchema = z
+  .object({
+    operation: z.literal("save-exercise-preferences"),
+    reviewed: z.boolean(),
+    restrictions: z.array(z.enum(restrictionOptions.map((x) => x.code))).max(8),
+    choices: z
+      .array(
+        z
+          .object({
+            exerciseId: z.uuid(),
+            preference: z.enum(preferenceOptions),
+          })
+          .strict(),
+      )
+      .max(100),
+  })
+  .strict()
+  .superRefine((v, ctx) => {
+    if (
+      new Set(v.restrictions).size !== v.restrictions.length ||
+      new Set(v.choices.map((c) => c.exerciseId)).size !== v.choices.length
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Choose each restriction and exercise once.",
+      });
+  });
 export const changeSchema = z.discriminatedUnion("operation", [
+  exercisePreferencesSchema,
   z
     .object({ operation: z.literal("save-profile"), basics: basicsSchema })
     .strict(),
@@ -200,6 +234,11 @@ export type ProfileBundle = {
           onboardingCompletedAt: string | null;
         })
     | null;
+  exercisePreferences: {
+    reviewed: boolean;
+    restrictions: Restriction[];
+    choices: Record<string, ExercisePreference>;
+  };
   measurements: MeasurementDto[];
   equipment: EquipmentDto[];
   hasMoreMeasurements: boolean;

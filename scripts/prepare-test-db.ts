@@ -40,6 +40,12 @@ const result = spawnSync(
   },
 );
 if (result.status !== 0) process.exit(result.status ?? 1);
+const seeded = spawnSync(
+  process.execPath,
+  ["node_modules/prisma/build/index.js", "db", "seed"],
+  { stdio: "inherit", env: { ...process.env, DATABASE_URL: base.toString() } },
+);
+if (seeded.status !== 0) process.exit(seeded.status ?? 1);
 console.log(
   `Disposable ${name} migrations applied. No production data changed.`,
 );

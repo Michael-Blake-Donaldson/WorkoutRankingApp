@@ -1,0 +1,61 @@
+import type { equipmentTypes } from "../profile/options";
+import type { ExercisePreference, Restriction } from "./options";
+export type EquipmentType = (typeof equipmentTypes)[number];
+export type ExerciseDto = {
+  id: string;
+  slug: string;
+  variantGroup: string;
+  versionId: string;
+  version: number;
+  name: string;
+  aliases: string[];
+  modality: string;
+  pattern: string;
+  laterality: string;
+  resistance: string;
+  difficulty: number;
+  metrics: string[];
+  demands: Restriction[];
+  instructions: string[];
+  safetyNotes: string[];
+  sourceUrls: string[];
+  license: string;
+  reviewedBy: string;
+  reviewedAt: string;
+  contentHash: string;
+  reviewStatus: string;
+  muscles: { id: string; name: string; role: "primary" | "secondary" }[];
+  equipment: EquipmentType[];
+};
+export type FilterContext = {
+  equipment: EquipmentType[];
+  restrictions: Restriction[];
+  reviewed: boolean;
+  unresolvedNotes: boolean;
+  experience: 1 | 2 | 3;
+  choices: Record<string, ExercisePreference>;
+};
+export type Components = {
+  muscle: number;
+  pattern: number;
+  equipment: number;
+  difficulty: number;
+  preference: number;
+};
+export type Alternative = {
+  exercise: ExerciseDto;
+  score: number;
+  components: Components;
+  relationship: "same_pattern" | "related_movement";
+  differences: string[];
+};
+export type AlternativesResult = {
+  rulesVersion: string;
+  source: ExerciseDto;
+  sourceGate: { eligible: boolean; reasons: string[] };
+  status: "matches" | "related_only" | "no_match" | "review_required";
+  message: string;
+  alternatives: Alternative[];
+  excludedCount: number;
+  profileVersion: number;
+};

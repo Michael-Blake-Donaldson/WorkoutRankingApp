@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import Decimal from "decimal.js";
 import type { Prisma } from "../../generated/prisma/client";
 import { db } from "../../server/db";
+import type { ExercisePreference, Restriction } from "../exercises/options";
 import type {
   Basics,
   EquipmentDto,
@@ -94,6 +95,23 @@ async function load(
   });
   return {
     accountId: userId,
+    exercisePreferences: {
+      reviewed: profile?.movementFiltersReviewed ?? false,
+      restrictions: (
+        await tx.userExerciseRestriction.findMany({
+          where: { userId },
+          orderBy: { code: "asc" },
+        })
+      ).map((r) => r.code as Restriction),
+      choices: Object.fromEntries(
+        (
+          await tx.userExerciseChoice.findMany({
+            where: { userId },
+            orderBy: { exerciseId: "asc" },
+          })
+        ).map((c) => [c.exerciseId, c.preference as ExercisePreference]),
+      ),
+    },
     profile: profile
       ? {
           displayName: profile.displayName,
@@ -208,6 +226,37 @@ export async function mutateProfile(
       };
       if (profile) await tx.fitnessProfile.update({ where: { userId }, data });
       else await tx.fitnessProfile.create({ data: { userId, ...data } });
+    }
+    if (change.operation === "save-exercise-preferences") {
+      const ids = change.choices.map((c) => c.exerciseId);
+      if (
+        (await tx.exercise.count({
+          where: {
+            id: { in: ids },
+            archived: false,
+            versions: { some: { reviewStatus: "editorial" } },
+          },
+        })) !== ids.length
+      )
+        throw new ProfileError(
+          400,
+          "Choose exercises from the current reviewed library.",
+        );
+      await tx.userExerciseRestriction.deleteMany({ where: { userId } });
+      await tx.userExerciseChoice.deleteMany({ where: { userId } });
+      if (change.restrictions.length)
+        await tx.userExerciseRestriction.createMany({
+          data: change.restrictions.map((code) => ({ userId, code })),
+        });
+      const choices = change.choices.filter((c) => c.preference !== "neutral");
+      if (choices.length)
+        await tx.userExerciseChoice.createMany({
+          data: choices.map((c) => ({ userId, ...c })),
+        });
+      await tx.fitnessProfile.update({
+        where: { userId },
+        data: { movementFiltersReviewed: change.reviewed },
+      });
     }
     if (change.operation === "save-settings")
       await tx.fitnessProfile.update({
@@ -404,6 +453,7 @@ export async function mutateProfile(
           JSON.stringify({
             profile: snapshot.profile,
             equipment: snapshot.equipment,
+            exercisePreferences: snapshot.exercisePreferences,
           }),
         ),
       },

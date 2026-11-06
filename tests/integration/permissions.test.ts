@@ -22,6 +22,19 @@ afterAll(async () => {
 });
 
 describe("least-privilege database role", () => {
+  it("can read reference exercises but cannot rewrite them or read unscoped preferences", async () => {
+    expect(await runtime.exercise.count()).toBe(16);
+    await expect(
+      runtime.exercise.updateMany({ data: { archived: true } }),
+    ).rejects.toThrow();
+    await expect(runtime.exerciseVersion.deleteMany()).rejects.toThrow();
+    expect(await runtime.userExerciseChoice.findMany()).toEqual([]);
+    await expect(
+      runtime.userExerciseRestriction.create({
+        data: { userId: "foreign", code: "impact" },
+      }),
+    ).rejects.toThrow();
+  });
   it("rejects elevated application credentials under the production policy", async () => {
     const previous = process.env.NODE_ENV;
     try {
