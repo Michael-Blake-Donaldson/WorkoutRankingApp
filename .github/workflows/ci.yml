@@ -34,7 +34,18 @@ jobs:
       - run: npm test
       - run: npm audit --audit-level=moderate
       - run: npm run build
-      - run: npx playwright install --with-deps chromium webkit
+      - name: Use official Ubuntu archive for browser dependencies
+        run: |
+          # The Azure mirror has stalled dependency downloads on hosted runners.
+          # Keep Ubuntu's signed repositories and switch only the mirror URL.
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            if [ -f "$source" ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$source"
+            fi
+          done
+      - name: Install browser dependencies
+        timeout-minutes: 5
+        run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
       - name: Documentation and primary-spec integrity
         shell: pwsh

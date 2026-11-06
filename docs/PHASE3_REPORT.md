@@ -29,6 +29,8 @@ Hybrid RPG/serious tracking, guided adaptation approval, competitive head-to-hea
 
 - Final interface review caught potential stale comparisons during environment changes or navigation. The equipment selector is disabled during requests, and exercise/revision keys reset comparison state on navigation. A browser regression verifies old scores disappear. Snapshot capture now waits for rendered headings instead of assuming a streamed navigation has finished.
 
+- Hosted CI exposed an infrastructure timeout: the Azure Ubuntu mirror transferred packages at roughly 40 KB/s until the twenty-minute job limit. The workflow now uses Ubuntu's official HTTPS archive with package signature verification unchanged and bounds browser dependency installation to five minutes. This does not skip browser checks.
+
 ## Assumptions and limits
 
 See [the exact contract](PHASE3_EXERCISES.md). Editorial provenance is not qualified trainer/clinical approval. No copied media or publisher prose is distributed. A human exercise-content/suitability review remains necessary before broader publication. Library coverage is intentionally limited, with no reviewed horizontal row, vertical press, lunge, machine/cable or outdoor route. No-match is a supported outcome. Difficulty is editorial, scores express ranking only, and available load ranges do not prescribe training load. Private limitation notes are not parsed or clinically cleared by software.
@@ -39,7 +41,8 @@ Desktop WebKit is not physical iPhone validation. Hosted configuration, real mai
 
 - `3f37925` — `feat: add versioned exercise library and private alternative rules`
 - `fc6d674` — `fix: protect exercise identities and consistent private configuration`
-- Interface/verification batch — `feat: deliver accessible exercise browsing and filtered comparisons`
+- `ad07606` — `feat: deliver accessible exercise browsing and filtered comparisons`
+- CI recovery batch — `ci: avoid stalled Azure mirror for browser dependencies`
 
 These coherent batches were committed and pushed to origin/main after their applicable checks. The backend integrity batch passed [hosted CI](https://github.com/Michael-Blake-Donaldson/WorkoutRankingApp/actions/runs/42141985812); the final interface submission triggers the same complete workflow, visible in [repository Actions](https://github.com/Michael-Blake-Donaldson/WorkoutRankingApp/actions). No secrets, local keys, traces, synthetic accounts or health records are committed.
 
