@@ -79,6 +79,7 @@ describe("profile validation and body metric arithmetic", () => {
       metric,
       valueSi,
       recordedAt: `2026-01-${day}T00:00:00.000Z`,
+      createdAt: `2026-01-${day}T00:00:00.000Z`,
       correctsId: null,
       correctionReason: null,
       current,

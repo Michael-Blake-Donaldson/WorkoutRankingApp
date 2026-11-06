@@ -34,7 +34,17 @@ const numeric = z
     /^\d{1,6}(\.\d{1,6})?$/,
     "Use a positive number with up to six decimal places.",
   );
-const optionalNumber = numeric.nullable();
+const optionalNumber = z
+  .string()
+  .regex(/^\d{1,6}(\.\d{1,2})?$/, "Use at most two decimal places.")
+  .nullable();
+const optionalLoad = z
+  .string()
+  .regex(
+    /^\d{1,6}(\.\d{1,3})?$/,
+    "Use at most three decimal places for kg loads.",
+  )
+  .nullable();
 const timezone = z
   .string()
   .max(100)
@@ -110,9 +120,9 @@ export const preferencesSchema = z
 const itemSchema = z
   .object({
     equipmentType: z.enum(equipmentTypes),
-    minLoadKg: optionalNumber,
-    maxLoadKg: optionalNumber,
-    incrementKg: optionalNumber,
+    minLoadKg: optionalLoad,
+    maxLoadKg: optionalLoad,
+    incrementKg: optionalLoad,
   })
   .strict()
   .superRefine((v, ctx) => {
@@ -187,6 +197,7 @@ export type MeasurementDto = {
   metric: (typeof metrics)[number];
   valueSi: string;
   recordedAt: string;
+  createdAt: string;
   correctsId: string | null;
   correctionReason: string | null;
   current: boolean;
@@ -215,4 +226,7 @@ export type ProfileBundle = {
   measurements: MeasurementDto[];
   equipment: EquipmentDto[];
   hasMoreMeasurements: boolean;
+  nextMeasurementCursor: string | null;
+  baselineHeight: MeasurementDto | null;
+  measurementStatus: { height: boolean; weight: boolean };
 };

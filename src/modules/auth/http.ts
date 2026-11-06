@@ -143,7 +143,10 @@ export async function handleAuth(request: Request): Promise<Response> {
   }
 }
 
-export async function readSmallJson(request: Request): Promise<unknown> {
+export async function readSmallJson(
+  request: Request,
+  limit = 4096,
+): Promise<unknown> {
   if (!request.body) return null;
   const reader = request.body.getReader();
   const chunks: Uint8Array[] = [];
@@ -152,7 +155,7 @@ export async function readSmallJson(request: Request): Promise<unknown> {
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > 4096) {
+    if (size > limit) {
       await reader.cancel();
       return null;
     }

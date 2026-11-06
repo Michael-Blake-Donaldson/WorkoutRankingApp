@@ -24,7 +24,9 @@ export function bmiHistory(entries: MeasurementDto[]) {
     .filter((m) => m.current)
     .sort(
       (a, b) =>
-        a.recordedAt.localeCompare(b.recordedAt) || a.id.localeCompare(b.id),
+        a.recordedAt.localeCompare(b.recordedAt) ||
+        a.createdAt.localeCompare(b.createdAt) ||
+        a.id.localeCompare(b.id),
     );
   return current
     .filter((m) => m.metric === "weight")
