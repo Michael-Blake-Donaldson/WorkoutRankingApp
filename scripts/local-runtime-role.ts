@@ -73,6 +73,15 @@ for (const database of ["fitness", "fitness_test", "fitness_e2e"]) {
       "GRANT SELECT ON invitations, account_capacity TO fitness_runtime",
     );
     // No audit mutation or invitation/capacity writes granted to the web process.
+    await connection.query(
+      "GRANT SELECT, INSERT, UPDATE ON fitness_profiles, equipment_profiles TO fitness_runtime",
+    );
+    await connection.query(
+      "GRANT SELECT, INSERT, DELETE ON equipment_items TO fitness_runtime",
+    );
+    await connection.query(
+      "GRANT SELECT, INSERT ON body_measurements, profile_revisions, profile_mutations TO fitness_runtime",
+    );
   } finally {
     await connection.end();
   }
