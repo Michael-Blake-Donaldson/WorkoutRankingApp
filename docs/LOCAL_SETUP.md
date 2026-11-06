@@ -80,3 +80,9 @@ For Phase 2, rerun `db:migrate`, `test:prepare`, `test:e2e:prepare` and `db:runt
 Keep the PostgreSQL volume when stopping: `docker compose --profile e2e down`. Removing volumes destroys local data and is not part of setup. If Docker restarts, check `docker compose ps` and rerun `up -d --wait`; failures to connect are failures, not successful migrations.
 
 `npm run auth:cleanup` removes expired sessions/verification records and rate buckets expired more than a day ago. Schedule daily in deployment using operator/maintenance credentials, with privacy-safe result counts. Invitation and audit retention need a reviewed operational policy. No hosted scheduler is provisioned here.
+
+## Phase 3 reference library
+
+Run `npm run db:generate`, `npm run db:migrate`, `npm run db:seed`, both disposable test preparation commands, and `npm run db:runtime` after updating. Test preparation now also seeds the immutable reference catalogue in each disposable database. Seed reruns never create users, health records, programs or workouts. The application runtime must have only SELECT on muscles, exercises, exercise_versions, exercise_muscles and exercise_equipment. Grant SELECT, INSERT, DELETE on user_exercise_restrictions and user_exercise_choices; their FORCE RLS policies require the transaction-local owner. Production deployment must provision equivalent grants explicitly, not use the local role helper or elevated migration credentials in the web process.
+
+Visit `/train` after signing in. Save profile basics and an equipment location, then review `/profile#movement-filters` to enable comparisons. An empty equipment inventory is valid. Nonempty limitation notes deliberately block personalized results and require qualified review; no clinical-clearance feature is supplied. Sources and editorial assumptions are documented in [the exercise contract](PHASE3_EXERCISES.md). Stop before Phase 4.

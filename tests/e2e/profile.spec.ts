@@ -327,3 +327,182 @@ test.describe("network recovery with intercepted responses", () => {
     expect(final.measurements[0].valueSi).toBe("81");
   });
 });
+
+async function exerciseSetup(page: Page) {
+  await join(page);
+  await page.goto("/profile");
+  await page
+    .getByLabel("Display name", { exact: true })
+    .fill("Library trainee");
+  await page.getByRole("checkbox", { name: "Monday", exact: true }).check();
+  await submit(page, "Save training preferences");
+  await page.getByLabel("Location name", { exact: true }).fill("Home");
+  await submit(page, "Add equipment location");
+  await page
+    .getByLabel("I reviewed these movement filters", { exact: false })
+    .check();
+  await submit(page, "Save movement filters");
+}
+test("exercise catalogue, private filters and meaningful home alternatives are accessible and persistent", async ({
+  page,
+  browserName,
+}) => {
+  const violations: string[] = [];
+  await page.addInitScript(() => {
+    document.addEventListener("securitypolicyviolation", (event) => {
+      console.error(`CSP violation: ${event.violatedDirective}`);
+    });
+  });
+  page.on("console", (message) => {
+    if (message.text().includes("CSP violation:"))
+      violations.push(message.text());
+  });
+  await exerciseSetup(page);
+  await page.reload();
+  await expect(
+    page.getByLabel("I reviewed these movement filters", { exact: false }),
+  ).toBeChecked();
+  await page.goto("/train");
+  await page.getByLabel("Search exercises or muscles").fill("goblet");
+  await expect(
+    page.getByRole("status").filter({ hasText: "2 exercises shown" }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Dumbbell goblet squat", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Instructions", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Compare alternatives", exact: true })
+    .click();
+  await expect(
+    page.getByRole("link", { name: "Bodyweight squat", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Requires unavailable equipment: dumbbell.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByText("Score components and differences", { exact: true })
+    .click();
+  await expect(
+    page.getByText(/external loading is not reproduced/),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Bodyweight squat", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Bodyweight squat", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/Ranking score/)).toHaveCount(0);
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/train/exercises/pull-up");
+  await page
+    .getByRole("button", { name: "Compare alternatives", exact: true })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: /No matching alternative/ }),
+  ).toBeVisible();
+  await page.goto("/profile#movement-filters");
+  await page.getByLabel("Avoid deep knee bending", { exact: true }).check();
+  await submit(page, "Save movement filters");
+  await page.goto("/train/exercises/dumbbell-goblet-squat");
+  await page
+    .getByRole("button", { name: "Compare alternatives", exact: true })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: /No matching alternative/ }),
+  ).toBeVisible();
+  await page.goto("/train");
+  await page
+    .getByLabel("Search exercises or muscles")
+    .fill("nonexistent movement");
+  await expect(
+    page.getByText(/No matching exercises in this limited library/),
+  ).toBeVisible();
+  expect(violations).toEqual([]);
+  // Playwright WebKit screenshot synchronization injects a non-nonced `body {}`
+  // stylesheet (coreBundle inPagePrepareForScreenshots). Capture only after all
+  // product CSP assertions; the production policy remains unchanged.
+  await page.goto("/train/exercises/dumbbell-goblet-squat");
+  await expect(
+    page.getByRole("heading", { name: "Dumbbell goblet squat", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Instructions", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `test-results/phase3-detail-${browserName}.png`,
+    fullPage: true,
+  });
+});
+test.describe("exercise comparison recovery", () => {
+  test.use({ serviceWorkers: "block" });
+  test("failed comparisons retry without fake results and stale revisions require reload", async ({
+    page,
+  }) => {
+    await exerciseSetup(page);
+    await page.goto("/train/exercises/push-up");
+    await page.route("**/api/exercises/alternatives", (route) =>
+      route.abort("failed"),
+    );
+    await page
+      .getByRole("button", { name: "Compare alternatives", exact: true })
+      .click();
+    await expect(page.getByRole("main").getByRole("alert")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Kneeling push-up", exact: true }),
+    ).toHaveCount(0);
+    await page.unroute("**/api/exercises/alternatives");
+    await page
+      .getByRole("button", { name: "Compare alternatives", exact: true })
+      .click();
+    await expect(
+      page.getByRole("link", { name: "Kneeling push-up", exact: true }),
+    ).toBeVisible();
+    const bundle = await (await page.request.get("/api/profile")).json();
+    const mutation = await page.request.post("/api/profile", {
+      headers: {
+        origin: "https://localhost:3443",
+        "x-profile-owner": bundle.accountId,
+      },
+      data: {
+        clientMutationId: randomUUID(),
+        expectedVersion: bundle.profile.version,
+        change: {
+          operation: "save-exercise-preferences",
+          reviewed: true,
+          restrictions: ["wrist_extension"],
+          choices: [],
+        },
+      },
+    });
+    expect(mutation.status()).toBe(200);
+    await page
+      .getByRole("button", { name: "Compare alternatives", exact: true })
+      .click();
+    await expect(page.getByRole("main").getByRole("alert")).toContainText(
+      "Your profile changed",
+    );
+    await expect(
+      page.getByRole("link", { name: "Kneeling push-up", exact: true }),
+    ).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Reload saved configuration" })
+      .click();
+    await page
+      .getByRole("button", { name: "Compare alternatives", exact: true })
+      .click();
+    await expect(
+      page.getByRole("status").filter({ hasText: /No matching alternative/ }),
+    ).toBeVisible();
+  });
+});

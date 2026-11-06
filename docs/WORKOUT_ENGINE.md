@@ -1,6 +1,6 @@
 # Workout engine specification
 
-All algorithms below are future work. Inputs, rules version, outputs and explanations must be reproducible. Clinical guidance and unreviewed safety values are outside scope.
+Phase 3 implements only the catalogue eligibility and scoring subset described in [the exercise contract](PHASE3_EXERCISES.md). Generation, program adaptation, workout substitution actions, recording and synchronization below remain future work. Inputs, rules version, outputs and explanations must be reproducible. Clinical guidance and unreviewed safety values are outside scope.
 
 ## Generation contract
 

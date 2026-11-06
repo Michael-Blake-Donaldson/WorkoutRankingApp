@@ -11,7 +11,7 @@ Read the entire [primary specification](fitness_rpg_product_spec_v1.md) first. I
 7. [Delivery plan](PHASE_PLAN.md): dependencies, seed strategy, phase boundaries.
 8. [Phase 0 report](PHASE0_REPORT.md): completed work, verification and remaining work.
 
-Every design below is a specification for future implementation. Proposed defaults are reversible and require review before their implementing phase. Documentation checks are not evidence that any runtime feature works.
+The original Phase 0 designs specify the full roadmap; implemented scope is identified in the phase reports below. Proposed defaults are reversible and require review before their implementing phase. Documentation checks are not evidence that any runtime feature works.
 
 ## Phase 1 implementation
 
@@ -27,4 +27,11 @@ Phase 0 documents describe the full roadmap. The Phase 1 report distinguishes im
 - [Profile data contract and assumptions](PHASE2_DATA_CONTRACT.md)
 - [Phase 2 report](PHASE2_REPORT.md)
 
-Profiles, equipment, privacy controls, units and immutable measurement corrections are implemented with real persistence. Exercise selection, plan generation, workout logging, competition and meal tracking remain in their later phases.
+Profiles, equipment, privacy controls, units and immutable measurement corrections are implemented with real persistence. Program generation, workout logging, competition and meal tracking remain in their later phases.
+
+## Phase 3 implementation
+
+- [Exercise data, eligibility and scoring contract](PHASE3_EXERCISES.md)
+- [Phase 3 report](PHASE3_REPORT.md)
+
+The limited library, private filters and instruction/comparison pages are implemented. These are read-only comparisons; Phase 4 program proposals and Phase 5 session substitution actions are not implemented.

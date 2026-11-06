@@ -49,3 +49,7 @@ Profile measurements, restrictions, targets, equipment and version snapshots rem
 - [Next.js nonce CSP and dynamic rendering](https://nextjs.org/docs/app/guides/content-security-policy)
 - [Next.js PWA guidance](https://nextjs.org/docs/app/guides/progressive-web-apps)
 - [Mailpit TLS configuration](https://mailpit.axllent.org/docs/configuration/smtp/)
+
+## Phase 3 additions
+
+Reference catalogue tables are read-only for the runtime; production policy rejects any INSERT/UPDATE/DELETE/TRUNCATE privilege on them. Preferences and restrictions require FORCE RLS owner context in addition to application ownership. Comparison POSTs enforce exact origin, stale-tab account intent, bounded strict JSON, rate limits and private/no-store responses. Server-loaded exercise detail pages send only account ID, revision and equipment names/IDs/default flags to the comparison client, not measurement history or free-text notes. Profile and inventory/filter reads use a coherent database snapshot. No comparison output is cached in the service worker or written to browser storage. Editorial scoring does not interpret diagnoses or override exclusions; limitation notes block personalized results. These controls do not substitute for qualified exercise-content review.

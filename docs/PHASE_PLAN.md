@@ -32,3 +32,7 @@ Fixtures cover two timezones, DST boundaries, no equipment, mixed units, pauses,
 ## Immediate next phase checklist (after review)
 
 Confirm auth/hosting/dependency versions, establish Git/CI if desired, scaffold app, pin dependencies, provision local PostgreSQL, add initial migrations/seed and real test runner, secure invitation capacity and ownership, create neutral navigation/error states, add manifest/icons and conservative caching, document setup and run meaningful Phase 1 tests. Business engines remain out of scope until their phases.
+
+## Current review gate: Phase 3
+
+Phases 1–3 have implementation and automated evidence; see [the Phase 3 report](PHASE3_REPORT.md). Review the limited catalogue and scoring contract before Phase 4. Phase 4 additionally needs reviewed prescription/volume/recovery configuration and sufficient catalogue coverage for any supported schedule; the generator must report infeasible movement coverage instead of inventing exercises. Broader library publication needs qualified human content review. Phase 5 owns applying a chosen substitution to an immutable workout prescription. No later phase is implicitly authorized by completing this gate.

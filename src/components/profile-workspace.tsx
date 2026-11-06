@@ -5,6 +5,7 @@ import type { ProfileBundle, ProfileChange } from "@/modules/profile/contracts";
 import { BasicsForm } from "./profile/basics-form";
 import { BodyMetrics } from "./profile/body-metrics";
 import { EquipmentForm } from "./profile/equipment-form";
+import { ExercisePreferences } from "./profile/exercise-preferences";
 import { days, label } from "./profile/fields";
 import { Measurements } from "./profile/measurements";
 import { SettingsForm } from "./profile/settings-form";
@@ -13,8 +14,10 @@ const subscribe = () => () => {};
 export function ProfileWorkspace({
   initial,
   mode,
+  library = [],
 }: {
   initial: ProfileBundle;
+  library?: { id: string; name: string }[];
   mode: "profile" | "onboarding" | "progress";
 }) {
   const hydrated = useSyncExternalStore(
@@ -237,6 +240,7 @@ export function ProfileWorkspace({
           {p && (
             <>
               <SettingsForm {...props} />
+              <ExercisePreferences {...props} library={library} />
               <section className="card">
                 <h2>Equipment locations</h2>
                 <p>

@@ -2,11 +2,6 @@ import { notFound } from "next/navigation";
 import { requireSession } from "@/modules/auth/session";
 
 const sections: Record<string, { title: string; description: string }> = {
-  train: {
-    title: "Train",
-    description:
-      "Programs, guided adaptation and workout logging are planned for Phases 3–5. No workout recorder is available yet.",
-  },
   ranks: {
     title: "Ranks",
     description:

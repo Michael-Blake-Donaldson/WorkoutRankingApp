@@ -50,3 +50,7 @@ Check nonnegative weight/reps/distance/duration/intake, positive height, bounded
 ## Migration and seed policy
 
 Phase 1 introduces minimal auth/core schema and migration tooling. Each later phase adds reviewed migrations for its own entities; do not migrate the entire future model prematurely. Run empty-database and upgrade-path tests against real PostgreSQL, verify constraints/rollback or forward-recovery, back up before destructive changes. See seed strategy in [delivery plan](PHASE_PLAN.md).
+
+## Phase 3 implementation mapping
+
+Muscle, Exercise, immutable ExerciseVersion, ExerciseMuscle and ExerciseEquipment now back the curated library. Identity and variant group remain separate from content versions. UserExerciseRestriction and UserExerciseChoice are private FORCE RLS tables; FitnessProfile.movementFiltersReviewed defaults false. The existing profile aggregate versions preferences together with inventory and records them in immutable revision snapshots. Snapshot reads use repeatable-read transactions to prevent mixed configuration during concurrent saves. See [the Phase 3 contract](PHASE3_EXERCISES.md) for publication, ownership and scoring semantics. No program/session/PR tables are introduced in this phase.
